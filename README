@@ -2,4 +2,3 @@ This is my Java chat client and server, that I'm doing as a project to practice 
 
 The code is under the GPL, not that I can imagine anyone wanting to use it (especially in it's current VERY incomplete state)
 
-Finally, atm this code uses some classes that Netbeans is providing that apparently are not part of the standard JDK (well compiling with plain old javac gives a load of errors related to missing classes), so for the time being, you will need Netbeans to compile it.
