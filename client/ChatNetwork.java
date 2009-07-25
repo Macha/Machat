@@ -24,7 +24,6 @@ package machat.client;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
 import java.net.InetAddress;
 import java.net.Socket;

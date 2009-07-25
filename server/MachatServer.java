@@ -40,13 +40,13 @@ public class MachatServer {
     private static int port = 1234;
     private static int nextId;
     private static LinkedList<ConnectedClient> clients;
-    private static HashMap clientToConnectionMap;
+    private static HashMap<Integer, Integer> clientToConnectionMap;
     /**
      * The main method for the application. Starts the server listening for connections.
      * @param args Unused
      */
     public static void main(String[] args) {
-        clientToConnectionMap = new HashMap();
+        clientToConnectionMap = new HashMap<Integer,Integer>();
         clients = new LinkedList<ConnectedClient>();
         nextId = 0;
         try {
