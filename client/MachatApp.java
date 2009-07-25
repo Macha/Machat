@@ -23,16 +23,14 @@ package machat.client;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
-
 /**
  * The main class of the application.
  */
-public class MachatApp extends SingleFrameApplication {
+public class MachatApp {
 
     private static LinkedList<ChatWindow> chats;
     private static HashMap<Integer, Integer> contactsToWindowMap;
+    private static MachatApp instance;
     private ContactsWindow contactsui;
     private ChatNetwork connection;
     private boolean connected;
@@ -41,10 +39,10 @@ public class MachatApp extends SingleFrameApplication {
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override protected void startup() {
+    protected void startup() {
         contactsToWindowMap = new HashMap();
         contactsui = new ContactsWindow();
-        show(contactsui);
+        contactsui.setVisible(true);
 
         chats = new LinkedList<ChatWindow>();
 
@@ -57,27 +55,21 @@ public class MachatApp extends SingleFrameApplication {
         }
     }
 
-    /**
-     * This method is to initialize the specified window by injecting resources.
-     * Windows shown in our application come fully initialized from the GUI
-     * builder, so this additional configuration is not needed.
-     */
-    @Override protected void configureWindow(java.awt.Window root) {
-    }
 
     /**
      * A convenient static getter for the application instance.
      * @return the instance of TChatApp
      */
     public static MachatApp getApplication() {
-        return Application.getInstance(MachatApp.class);
+        return instance;
     }
 
     /**
      * Main method launching the application.
      */
     public static void main(String[] args) {
-        launch(MachatApp.class, args);
+        instance = new MachatApp();
+        instance.startup();
     }
     /**
      * Opens a new chat with a user.

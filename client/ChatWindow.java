@@ -31,7 +31,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import org.jdesktop.application.Action;
 
 /**
  * This class is the window for a conversation
@@ -90,8 +89,6 @@ public class ChatWindow extends javax.swing.JFrame {
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
-        aboutMenuItem = new javax.swing.JMenuItem();
-
         setName("Form"); // NOI18N
 
         messageScrollPane.setName("messageScrollPane"); // NOI18N
@@ -106,8 +103,7 @@ public class ChatWindow extends javax.swing.JFrame {
         });
         messageScrollPane.setViewportView(messageTextArea);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(machat.client.MachatApp.class).getContext().getResourceMap(ChatWindow.class);
-        sendButton.setText(resourceMap.getString("sendButton.text")); // NOI18N
+        sendButton.setText("Send"); // NOI18N
         sendButton.setName("sendButton"); // NOI18N
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,11 +122,11 @@ public class ChatWindow extends javax.swing.JFrame {
         menuBar.setName("menuBar"); // NOI18N
 
         fileMenu.setMnemonic('F');
-        fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
+        fileMenu.setText("File"); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
+        exitMenuItem.setText("Exit"); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,7 +138,7 @@ public class ChatWindow extends javax.swing.JFrame {
         menuBar.add(fileMenu);
 
         helpMenu.setMnemonic('H');
-        helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
+        helpMenu.setText("Help"); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
         helpMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -150,15 +146,7 @@ public class ChatWindow extends javax.swing.JFrame {
             }
         });
 
-        aboutMenuItem.setMnemonic('A');
-        aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
-        aboutMenuItem.setName("aboutMenuItem"); // NOI18N
-        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutMenuItemActionPerformed(evt);
-            }
-        });
-        helpMenu.add(aboutMenuItem);
+
 
         menuBar.add(helpMenu);
 
@@ -199,28 +187,18 @@ public class ChatWindow extends javax.swing.JFrame {
 
     private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuActionPerformed
 
-    }//GEN-LAST:event_helpMenuActionPerformed
-    @Action
-    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        if (aboutBox == null) {
-            JFrame mainFrame = MachatApp.getApplication().getMainFrame();
-            aboutBox = new MachatAboutBox(mainFrame);
-            aboutBox.setLocationRelativeTo(mainFrame);
-        }
-        MachatApp.getApplication().show(aboutBox);
-    }//GEN-LAST:event_aboutMenuItemActionPerformed
+    }
 
     private void messageTextAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextAreaKeyPressed
         if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             sendMessage();
             evt.consume();
         }
-    }//GEN-LAST:event_messageTextAreaKeyPressed
+    }
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         MachatApp.getApplication().close();
-}//GEN-LAST:event_exitMenuItemActionPerformed
-
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;

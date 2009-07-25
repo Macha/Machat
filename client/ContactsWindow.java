@@ -89,11 +89,10 @@ public class ContactsWindow extends javax.swing.JFrame {
 
         mainMenuBar.setName("mainMenuBar"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(machat.client.MachatApp.class).getContext().getResourceMap(ContactsWindow.class);
-        fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
+        fileMenu.setText("File"); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
-        newChatMenuItem.setText(resourceMap.getString("newChatMenuItem.text")); // NOI18N
+        newChatMenuItem.setText("Open New Chat"); // NOI18N
         newChatMenuItem.setName("newChatMenuItem"); // NOI18N
         newChatMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -106,7 +105,7 @@ public class ContactsWindow extends javax.swing.JFrame {
         fileMenu.add(jSeparator1);
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
+        exitMenuItem.setText("Exit"); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

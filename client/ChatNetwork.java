@@ -30,9 +30,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 import machat.lib.CommandParser;
 
