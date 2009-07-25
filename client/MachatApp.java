@@ -23,6 +23,11 @@ package machat.client;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+
+
 /**
  * The main class of the application.
  */
@@ -40,7 +45,18 @@ public class MachatApp {
      * At startup create and show the main frame of the application.
      */
     protected void startup() {
-        contactsToWindowMap = new HashMap();
+        // Get the native look and feel class name
+        String nativeLF = UIManager.getSystemLookAndFeelClassName();
+        
+        // Install the look and feel
+        try {
+            UIManager.setLookAndFeel(nativeLF);
+        } catch (InstantiationException e) {
+        } catch (ClassNotFoundException e) {
+        } catch (UnsupportedLookAndFeelException e) {
+        } catch (IllegalAccessException e) {
+        }
+        contactsToWindowMap = new HashMap<Integer, Integer>();
         contactsui = new ContactsWindow();
         contactsui.setVisible(true);
 
@@ -53,6 +69,7 @@ public class MachatApp {
             contactsui.alert("Connection error", "No connection found. Could not start tchat.");
             connected = false;
         }
+
     }
 
 

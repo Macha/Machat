@@ -21,15 +21,8 @@
 
 package machat.client;
 
-import java.awt.FlowLayout;
 
-import javax.swing.Timer;
-import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 
 /**
@@ -38,6 +31,7 @@ import javax.swing.JOptionPane;
  */
 public class ChatWindow extends javax.swing.JFrame {
 
+	
     private final static String newline = "\n";
     private MachatApp app;
     private JDialog aboutBox;
