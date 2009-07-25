@@ -79,13 +79,13 @@ public class ChatWindow extends javax.swing.JFrame {
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
-        setName("Form"); // NOI18N
+        setName("Form"); 
 
-        messageScrollPane.setName("messageScrollPane"); // NOI18N
+        messageScrollPane.setName("messageScrollPane"); 
 
         messageTextArea.setColumns(20);
         messageTextArea.setRows(5);
-        messageTextArea.setName("messageTextArea"); // NOI18N
+        messageTextArea.setName("messageTextArea"); 
         messageTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 messageTextAreaKeyPressed(evt);
@@ -93,31 +93,31 @@ public class ChatWindow extends javax.swing.JFrame {
         });
         messageScrollPane.setViewportView(messageTextArea);
 
-        sendButton.setText("Send"); // NOI18N
-        sendButton.setName("sendButton"); // NOI18N
+        sendButton.setText("Send"); 
+        sendButton.setName("sendButton"); 
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendButtonActionPerformed(evt);
             }
         });
 
-        logScrollPane.setName("logScrollPane"); // NOI18N
+        logScrollPane.setName("logScrollPane"); 
 
         logTextArea.setColumns(20);
         logTextArea.setEditable(false);
         logTextArea.setRows(5);
-        logTextArea.setName("logTextArea"); // NOI18N
+        logTextArea.setName("logTextArea"); 
         logScrollPane.setViewportView(logTextArea);
 
-        menuBar.setName("menuBar"); // NOI18N
+        menuBar.setName("menuBar"); 
 
         fileMenu.setMnemonic('F');
-        fileMenu.setText("File"); // NOI18N
-        fileMenu.setName("fileMenu"); // NOI18N
+        fileMenu.setText("File"); 
+        fileMenu.setName("fileMenu"); 
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        exitMenuItem.setText("Exit"); // NOI18N
-        exitMenuItem.setName("exitMenuItem"); // NOI18N
+        exitMenuItem.setText("Exit"); 
+        exitMenuItem.setName("exitMenuItem"); 
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitMenuItemActionPerformed(evt);
@@ -128,8 +128,8 @@ public class ChatWindow extends javax.swing.JFrame {
         menuBar.add(fileMenu);
 
         helpMenu.setMnemonic('H');
-        helpMenu.setText("Help"); // NOI18N
-        helpMenu.setName("helpMenu"); // NOI18N
+        helpMenu.setText("Help"); 
+        helpMenu.setName("helpMenu"); 
         helpMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpMenuActionPerformed(evt);
@@ -169,28 +169,28 @@ public class ChatWindow extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {
         sendMessage();
-    }//GEN-LAST:event_sendButtonActionPerformed
+    }
 
-    private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuActionPerformed
+    private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {
 
     }
 
-    private void messageTextAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextAreaKeyPressed
+    private void messageTextAreaKeyPressed(java.awt.event.KeyEvent evt) {
         if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             sendMessage();
             evt.consume();
         }
     }
 
-    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         MachatApp.getApplication().close();
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JScrollPane logScrollPane;
@@ -199,6 +199,6 @@ public class ChatWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane messageScrollPane;
     private javax.swing.JTextArea messageTextArea;
     private javax.swing.JButton sendButton;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration
 
 }
