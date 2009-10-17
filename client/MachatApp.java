@@ -75,7 +75,7 @@ public class MachatApp {
 
     /**
      * A convenient static getter for the application instance.
-     * @return the instance of TChatApp
+     * @return the instance of MachatApp
      */
     public static MachatApp getApplication() {
         return instance;
@@ -105,6 +105,7 @@ public class MachatApp {
      * @param msg
      */
     public void addOtherUserMessage(int userId, String msg) {
+    	System.out.println("Recieved \"" + msg + "\" from " + userId);
         getChatWindow(userId).addMessage("" + userId, msg);
     }
     /**

@@ -79,12 +79,12 @@ public class ChatNetwork {
      * @param port The port to connect to.
      * @return A socket connected to that port.
      */
-    private static Socket getSocket(int port) throws NoConnectionException {
+    private static Socket getSocket(int targetPort) throws NoConnectionException {
         Socket s;
         InetAddress ip;
         try {
             ip = InetAddress.getByName(host);
-            s = new Socket(ip, port);
+            s = new Socket(ip, targetPort);
             return s;
         } catch (UnknownHostException e) {
             throw new NoConnectionException();
@@ -132,17 +132,16 @@ public class ChatNetwork {
  */
 class NetOutThread implements Runnable {
     private MachatApp app;
-    private Socket s;
     private OutputStreamWriter out;
     private ChatNetwork network;
     public NetOutThread(Socket s, ChatNetwork network) {
         this.app = MachatApp.getApplication();
-        this.s = s;
         this.network = network;
 
         try {
             out = new OutputStreamWriter(new BufferedOutputStream(s.getOutputStream()), "UTF-8");
             out.write("/confirmconnect" + "\n");
+            out.flush();
             System.out.println("NetOutThread started");
         } catch(Exception e) {
             e.printStackTrace();
@@ -153,6 +152,7 @@ class NetOutThread implements Runnable {
         while(true) {
             try {
                 currentCommandOut = network.getQueueItem();
+                
                 if(currentCommandOut != null) {
                     System.out.println(currentCommandOut + " sent");
                     out.write(currentCommandOut + "\n");
@@ -198,19 +198,23 @@ class NetInThread implements Runnable {
         String currentCommandIn = "";
         String[] command;
         while(true) {
-            currentCommandIn = in.nextLine();
-            try {
+        	try {
+                currentCommandIn = in.nextLine();
                 if(currentCommandIn != null) {
+                	System.out.println("Recieved: " + currentCommandIn);
                     command = CommandParser.parseRecievedCommand(currentCommandIn);
-                    if(command[0].equals("connected")) {
-                    } else if(command[0].equals("message")) {
+                    if(command[0].equals("confirmconnect")) {
+                    } else if(command[0].equalsIgnoreCase("message")) {
                         int fromId = new Integer(command[1]);
-                        MachatApp.getApplication().addOtherUserMessage(fromId, command[2]);
+                        app.addOtherUserMessage(fromId, command[2]);
                     }
-                    System.out.println("Recieved: " + currentCommandIn);
                 }
+            } catch(NoSuchElementException e) {
+            	System.out.println(currentCommandIn);
             } catch(NullPointerException e) {
-                //TODO find cause and handle properly.
+                e.printStackTrace();
+            } catch(IOException e) {
+            	e.printStackTrace();
             }
         }
     }

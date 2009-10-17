@@ -29,7 +29,11 @@ import javax.swing.JOptionPane;
  * @author Macha <macha.hack@gmail.com>
  */
 public class ContactsWindow extends javax.swing.JFrame {
-    private DefaultListModel listData;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8431907581067825120L;
+	private DefaultListModel listData;
     private int lastClicked;
 
     /** 
@@ -54,7 +58,8 @@ public class ContactsWindow extends javax.swing.JFrame {
     /** 
 	 * This method sets up the GUI for use (was originally created by Netbeans editor)
      */
-    private void initComponents() {
+    @SuppressWarnings("serial")
+	private void initComponents() {
 
         listScroller = new javax.swing.JScrollPane();
         contactList = new javax.swing.JList();

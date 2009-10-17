@@ -20,6 +20,7 @@
  */
 package machat.server;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import machat.lib.*;
@@ -39,15 +40,13 @@ import machat.lib.MachatUser;
 public class MachatServer {
     private static int port = 1234;
     private static int nextId;
-    private static LinkedList<ConnectedClient> clients;
-    private static HashMap<Integer, Integer> clientToConnectionMap;
+    private static HashMap<Integer, ConnectedClient> clientMap;
     /**
      * The main method for the application. Starts the server listening for connections.
      * @param args Unused
      */
     public static void main(String[] args) {
-        clientToConnectionMap = new HashMap<Integer,Integer>();
-        clients = new LinkedList<ConnectedClient>();
+        clientMap = new HashMap<Integer, ConnectedClient>();
         nextId = 0;
         try {
             ServerSocket ss;
@@ -56,8 +55,7 @@ public class MachatServer {
             while(true) {
                 s = ss.accept();
                 ConnectedClient cct = new ConnectedClient(s, nextId);
-                clients.add(nextId, cct);
-                registerConnection(nextId, nextId);
+                clientMap.put(nextId, cct);
                 System.out.println("Connect: " + nextId);
                 nextId++;
                 Thread t = new Thread(cct);
@@ -68,26 +66,19 @@ public class MachatServer {
         }
     }
     /**
-     * Sets a connection up so that messages can be recieved.
-     */
-    public static void registerConnection(int userId, int connectionId) {
-        clientToConnectionMap.put(userId, connectionId);
-    }
-    /**
-     * Gets the ID of a connected user.
-     * @param clientId
-     * @return
-     */
-    public static int getClientConnectionId(int clientId) {
-        return (Integer)clientToConnectionMap.get(clientId);
-    }
-    /**
      * Gets a client object from the client ID.
      * @param clientId The user ID of the client to message.
      * @return An object representing the connection (more specifically, a running Thread)
      */
     public static ConnectedClient getClient(int clientId) {
-        return clients.get(getClientConnectionId(clientId));
+    	try {
+            return clientMap.get(clientId);
+    	} catch(Exception e) {
+    		e.printStackTrace(); //TODO write proper code
+    		System.out.println("Exception encountered getting client");
+    		System.exit(1);
+    		return null;
+    	}
     }
     /**
      * Sends a message from one client to another.
@@ -97,7 +88,8 @@ public class MachatServer {
      */
     public static void sendMessage(int targetId, int fromId, String message) {
         ConnectedClient targetClient = getClient(targetId);
-        targetClient.addOutCommand("/message:" + fromId + ":" + message);
+        System.out.println("Sending message: " + message + "\n\nfrom " + fromId +  " to " + targetId);
+        targetClient.addOutCommand("/message:" + fromId + ":" + message + "\n");
     }
     /**
      * This method disconnects a client from the server.
@@ -106,7 +98,7 @@ public class MachatServer {
     public static void disconnect(int targetId) {
         ConnectedClient connectedClient = getClient(targetId);
         connectedClient.quit();
-        clients.set(targetId, null);
+        clientMap.remove(targetId);
         System.out.println("Disconnect: " + targetId);
     }
 
@@ -168,7 +160,7 @@ class ConnectedClient implements Runnable {
         shouldExit = true;
     }
     /**
-     * This adds a  recieved command to be processed. It may not occur instantly.
+     * This adds a received command to be processed. It may not occur instantly.
      * Should only be called by this class, and commandProcessor.
      * @param command The command to be processed.
      */
@@ -181,26 +173,28 @@ class ConnectedClient implements Runnable {
      */
     public void addOutCommand(String command) {
         commandProcessor.addOutCommand(command);
+        System.out.println("" + thisId + " recieved to send: " + command);
     }
     /**
      * This method returns the connection id of the thread.
      * @return
      */
-    public int getConnectionId() {
+    public int getId() {
         return thisId;
     }
 }
 class CommandProcessor implements Runnable {
-    private LinkedList<String> inQueue;
-    private LinkedList<String> outQueue;
+    private LinkedBlockingQueue<String> inQueue;
+    private LinkedBlockingQueue<String> outQueue;
     private OutputStreamWriter out;
     private ConnectedClient cct;
     private int conId;
     public CommandProcessor(OutputStreamWriter out, ConnectedClient cct) {
         this.cct = cct;
         this.out = out;
-        inQueue = new LinkedList<String>();
-        this.conId = cct.getConnectionId();
+        inQueue = new LinkedBlockingQueue<String>();
+        outQueue = new LinkedBlockingQueue<String>();
+        this.conId = cct.getId();
     }
     public void run() {
         String currentCommandIn;
@@ -208,43 +202,60 @@ class CommandProcessor implements Runnable {
         while(true) {
             try {
                 currentCommandIn = inQueue.poll();
-                if(currentCommandIn != null) {
-                    System.out.println(currentCommandIn);
-                    String[] commandArr = CommandParser.parseRecievedCommand(currentCommandIn);
-                    if(commandArr[0].equalsIgnoreCase("message")) {
-                        int target = Integer.parseInt(commandArr[1]);
-                        String message = commandArr[2];
-                        try {
-                            out.flush();
-                        } catch (IOException ex) {
-                            Logger.getLogger(CommandProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        MachatServer.sendMessage(target, conId, message);
-                    } else if(commandArr[0].equalsIgnoreCase("quit")) {
-                        // Tell the server to disconnect us.
-                        MachatServer.disconnect(cct.getConnectionId());
-                        break;
-                    } else {
-                        try {
-                            out.write("Unknown: " + currentCommandIn + "\n");
-                        } catch (IOException ex) {
-                            Logger.getLogger(CommandProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-                currentCommandOut = outQueue.poll();
-                if(currentCommandOut != null) {
-                    try {
-                        out.write(currentCommandOut + "\n");
-                        System.out.println(currentCommandOut + "sent");
-                        out.flush();
-                    } catch (IOException ex) {
-                        Logger.getLogger(CommandProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
             } catch(Exception e) {
-                // e.dontPrintStackTrace()
+                e.printStackTrace();
+                currentCommandIn = null;
             }
+            if(currentCommandIn != null) {
+
+                String[] commandArr;
+                try {
+                    commandArr = CommandParser.parseRecievedCommand(currentCommandIn);
+                } catch(IOException e) {
+                	System.out.println("Invalid command recieved: " + currentCommandIn);
+                	commandArr = new String[1];
+                	commandArr[0] = null;
+                }
+				if(commandArr[0].equalsIgnoreCase("message")) {
+					System.out.println(commandArr.toString());
+                    int target = Integer.parseInt(commandArr[1]);
+                    String message = commandArr[2];
+                    System.out.println("Message sending to: " + target);
+                    MachatServer.sendMessage(target, this.conId, message);
+                } else if(commandArr[0].equalsIgnoreCase("quit")) {
+                    // Tell the server to disconnect us.
+                    MachatServer.disconnect(conId);
+                    break;
+                } else if(commandArr[0].equalsIgnoreCase("confirmconnect")) {
+                	
+                } else {
+                    try {
+                        out.write("Unknown: " + currentCommandIn + "\n");
+                    } catch (IOException ex) {
+                        System.out.println("Failed output warning of unknown command.");
+                    }
+                }
+            }
+            try {
+                currentCommandOut = outQueue.poll();
+            } catch(NullPointerException e) {
+            	currentCommandOut = null;
+            }
+            if(currentCommandOut != null) {
+                try {
+                    out.write(currentCommandOut + "\n");
+                    System.out.println(currentCommandOut + "sent");
+                    out.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
     /**
@@ -253,7 +264,12 @@ class CommandProcessor implements Runnable {
      */
     public synchronized void addInCommand(String command) {
         if(command != null) {
-            inQueue.push(command);
+            try {
+				inQueue.put(command);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             System.out.println("Recieved In: " + command);
         }
     }
@@ -262,9 +278,16 @@ class CommandProcessor implements Runnable {
      * @param command The command to be sent
      */
     public synchronized void addOutCommand(String command) {
-        if(command != null) {
-                outQueue.push(command);
-                System.out.println("Ready to send: " + command);
+    	if(command != null) {
+    		try {
+    			outQueue.put(command);
+    		} catch(Exception e) {
+    			System.out.println(command);
+    			e.printStackTrace();
+    		}
+            System.out.println("Ready to send: " + command);
+        } else {
+        	System.out.println("Null command recieved");
         }
     }
 }

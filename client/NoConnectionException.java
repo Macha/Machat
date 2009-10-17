@@ -30,6 +30,12 @@ import java.io.IOException;
 public class NoConnectionException extends IOException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -833495975605849653L;
+
+
+	/**
      * Creates a new instance of <code>NoConnectionException</code> without detail message.
      */
     public NoConnectionException() {

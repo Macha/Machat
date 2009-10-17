@@ -32,7 +32,11 @@ import javax.swing.JDialog;
 public class ChatWindow extends javax.swing.JFrame {
 
 	
-    private final static String newline = "\n";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1884248914631495966L;
+	private final static String newline = "\n";
     private MachatApp app;
     private JDialog aboutBox;
     private int contactId;

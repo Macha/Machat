@@ -20,6 +20,8 @@
  */
 package machat.lib;
 
+import java.io.IOException;
+
 /**
  * This class contains utility methods for parsing strings
  * @author Macha <macha.hack@gmail.com>
@@ -30,14 +32,19 @@ public class CommandParser {
      * @param command The command to parse.
      * @return An array of strings with the command in position 0, and the
      * parameters in the command as the other elements of the array.
+     * @throws IOException 
      */
-    public static String[] parseRecievedCommand(String command) {
-        if(command.charAt(0) == '/') {
+    public static String[] parseRecievedCommand(String command) throws IOException {
+        if(command == null || command.length() == 0) {
+        	return null;
+        } else if(command.charAt(0) == '/') {
             command = command.substring(1);
             String[] commandArray = command.split(":");
             return commandArray;
+        } else {
+        	System.out.println(command);
+        	throw new IOException();
         }
-        return null;
     }
     /**
      * Internal helper method to replace variable lengths strings with other

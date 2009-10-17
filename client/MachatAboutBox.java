@@ -25,7 +25,12 @@ import javax.swing.JDialog;
 
 public class MachatAboutBox extends JDialog {
 
-    public MachatAboutBox(java.awt.Frame parent) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5040365817889058783L;
+
+	public MachatAboutBox(java.awt.Frame parent) {
         super(parent);
         initComponents();
         getRootPane().setDefaultButton(closeButton);
