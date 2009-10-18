@@ -53,7 +53,7 @@ public class ChatNetwork {
     public ChatNetwork() throws NoConnectionException {
         this.commandQueue = new LinkedList<String>();
         Socket socket = getSocket(port);
-        Thread netInThread = new Thread(new NetInThread(socket, this));
+        Thread netInThread = new Thread(new NetInThread(socket));
         Thread netOutThread = new Thread(new NetOutThread(socket, this));
         
         netInThread.start();
@@ -131,11 +131,9 @@ public class ChatNetwork {
  * @author Macha <macha.hack@gmail.com>
  */
 class NetOutThread implements Runnable {
-    private MachatApp app;
     private OutputStreamWriter out;
     private ChatNetwork network;
     public NetOutThread(Socket s, ChatNetwork network) {
-        this.app = MachatApp.getApplication();
         this.network = network;
 
         try {
@@ -177,15 +175,17 @@ class NetOutThread implements Runnable {
  */
 class NetInThread implements Runnable {
     private MachatApp app;
-    private Socket s;
     private Scanner in;
-    private ChatNetwork network;
-    private int id;
     
-    public NetInThread(Socket s, ChatNetwork network) {
+    /**
+	 * @deprecated Use {@link #NetInThread(Socket)} instead
+	 */
+	public NetInThread(Socket s, ChatNetwork network) {
+		this(s);
+	}
+
+	public NetInThread(Socket s) {
         this.app = MachatApp.getApplication();
-        this.s = s;
-        this.network = network;
 
         try {
             in = new Scanner(s.getInputStream(), "UTF-8");

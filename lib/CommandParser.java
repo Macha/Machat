@@ -61,11 +61,11 @@ public class CommandParser {
         if (find == null)  return original;
         if (replace == null)  replace = "";
 
-        int found = original.indexOf( find );
+        int found = original.indexOf(find);
         while (found != -1) {
-            original = original.substring(0,found) + replace + original.substring(found+find.length());
+            original = original.substring(0,found) + replace + original.substring(found + find.length());
             found += replace.length();
-            found = original.indexOf( find, found );
+            found = original.indexOf(find, found);
          }
         return original;
     }

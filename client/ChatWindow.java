@@ -22,8 +22,6 @@
 package machat.client;
 
 
-import javax.swing.JDialog;
-
 
 /**
  * This class is the window for a conversation
@@ -38,7 +36,6 @@ public class ChatWindow extends javax.swing.JFrame {
 	private static final long serialVersionUID = -1884248914631495966L;
 	private final static String newline = "\n";
     private MachatApp app;
-    private JDialog aboutBox;
     private int contactId;
 
     /** 
@@ -195,7 +192,6 @@ public class ChatWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration
-    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JScrollPane logScrollPane;
     private javax.swing.JTextArea logTextArea;

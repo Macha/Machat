@@ -21,8 +21,6 @@
 package machat.server;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import machat.lib.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,21 +46,29 @@ public class MachatServer {
     public static void main(String[] args) {
         clientMap = new HashMap<Integer, ConnectedClient>();
         nextId = 0;
+        ServerSocket ss;
         try {
-            ServerSocket ss;
-            ss = new ServerSocket(port);
-            Socket s;
-            while(true) {
-                s = ss.accept();
-                ConnectedClient cct = new ConnectedClient(s, nextId);
-                clientMap.put(nextId, cct);
-                System.out.println("Connect: " + nextId);
-                nextId++;
-                Thread t = new Thread(cct);
-                t.start();
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
+			ss = new ServerSocket(port);
+		} catch (IOException e) {
+			System.out.println("Unable to open server socket. Please check the port is not in use already.");
+			ss = null; // This prevents a compiler error that ss is not initialised a few lines down.
+					   // It does not seem to notice that the System.exit call prevents the whole while loop
+					   // from running.
+			System.exit(1);
+		}
+        Socket s;
+        while(true) {
+        	try {
+        		s = ss.accept();
+        		ConnectedClient cct = new ConnectedClient(s, nextId);
+	            clientMap.put(nextId, cct);
+	            System.out.println("Connect: " + nextId);
+	            nextId++;
+	            Thread t = new Thread(cct);
+	            t.start();
+        	} catch(IOException e) {
+        		System.out.println("Failed to connect to a client");
+        	}
         }
     }
     /**
@@ -71,14 +77,7 @@ public class MachatServer {
      * @return An object representing the connection (more specifically, a running Thread)
      */
     public static ConnectedClient getClient(int clientId) {
-    	try {
             return clientMap.get(clientId);
-    	} catch(Exception e) {
-    		e.printStackTrace(); //TODO write proper code
-    		System.out.println("Exception encountered getting client");
-    		System.exit(1);
-    		return null;
-    	}
     }
     /**
      * Sends a message from one client to another.
@@ -149,14 +148,18 @@ class ConnectedClient implements Runnable {
                 }
                 Thread.sleep(100);
              }
-        } catch(Exception e) {
+        } catch(InterruptedException e) {
             e.printStackTrace();
+            // Do nothing.
+        } catch(IOException e) {
+        	System.out.println("Network access failure. Disconnecting: " + thisId);
+        	quit();
         }
     }
     /**
      * This method causes the connection to close.
      */
-    public void quit() {
+    public synchronized void quit() {
         shouldExit = true;
     }
     /**
@@ -187,10 +190,8 @@ class CommandProcessor implements Runnable {
     private LinkedBlockingQueue<String> inQueue;
     private LinkedBlockingQueue<String> outQueue;
     private OutputStreamWriter out;
-    private ConnectedClient cct;
     private int conId;
     public CommandProcessor(OutputStreamWriter out, ConnectedClient cct) {
-        this.cct = cct;
         this.out = out;
         inQueue = new LinkedBlockingQueue<String>();
         outQueue = new LinkedBlockingQueue<String>();
@@ -200,14 +201,8 @@ class CommandProcessor implements Runnable {
         String currentCommandIn;
         String currentCommandOut;
         while(true) {
-            try {
-                currentCommandIn = inQueue.poll();
-            } catch(Exception e) {
-                e.printStackTrace();
-                currentCommandIn = null;
-            }
+            currentCommandIn = inQueue.poll();
             if(currentCommandIn != null) {
-
                 String[] commandArr;
                 try {
                     commandArr = CommandParser.parseRecievedCommand(currentCommandIn);
@@ -216,25 +211,7 @@ class CommandProcessor implements Runnable {
                 	commandArr = new String[1];
                 	commandArr[0] = null;
                 }
-				if(commandArr[0].equalsIgnoreCase("message")) {
-					System.out.println(commandArr.toString());
-                    int target = Integer.parseInt(commandArr[1]);
-                    String message = commandArr[2];
-                    System.out.println("Message sending to: " + target);
-                    MachatServer.sendMessage(target, this.conId, message);
-                } else if(commandArr[0].equalsIgnoreCase("quit")) {
-                    // Tell the server to disconnect us.
-                    MachatServer.disconnect(conId);
-                    break;
-                } else if(commandArr[0].equalsIgnoreCase("confirmconnect")) {
-                	
-                } else {
-                    try {
-                        out.write("Unknown: " + currentCommandIn + "\n");
-                    } catch (IOException ex) {
-                        System.out.println("Failed output warning of unknown command.");
-                    }
-                }
+                this.handleParsedCommand(commandArr);
             }
             try {
                 currentCommandOut = outQueue.poll();
@@ -259,7 +236,7 @@ class CommandProcessor implements Runnable {
         }
     }
     /**
-     * This adds a recieved command to be processed at some future point.
+     * This adds a received command to be processed at some future point.
      * @param command The command to be processed.
      */
     public synchronized void addInCommand(String command) {
@@ -267,8 +244,6 @@ class CommandProcessor implements Runnable {
             try {
 				inQueue.put(command);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
             System.out.println("Recieved In: " + command);
         }
@@ -281,13 +256,30 @@ class CommandProcessor implements Runnable {
     	if(command != null) {
     		try {
     			outQueue.put(command);
-    		} catch(Exception e) {
-    			System.out.println(command);
-    			e.printStackTrace();
+    		} catch(InterruptedException e) {
     		}
             System.out.println("Ready to send: " + command);
         } else {
         	System.out.println("Null command recieved");
+        }
+    }
+    public void handleParsedCommand(String[] commandArr) {
+		if(commandArr[0].equalsIgnoreCase("message")) {
+            int target = Integer.parseInt(commandArr[1]);
+            String message = commandArr[2];
+            System.out.println("Message sending to: " + target);
+            MachatServer.sendMessage(target, this.conId, message);
+        } else if(commandArr[0].equalsIgnoreCase("quit")) {
+            // Tell the server to disconnect us.
+            MachatServer.disconnect(conId);
+        } else if(commandArr[0].equalsIgnoreCase("confirmconnect")) {
+        	
+        } else {
+            try {
+                out.write("Unknown: " + commandArr[0] + "\n");
+            } catch (IOException e) {
+                System.out.println("Failed output warning of unknown command.");
+            }
         }
     }
 }
