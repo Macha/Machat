@@ -33,8 +33,9 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MachatApp {
 
-    private static LinkedList<ChatWindow> chats;
-    private static HashMap<Integer, Integer> contactsToWindowMap;
+    private static LinkedList<ChatPanel> chats;
+    private ChatWindow chatWindow;
+    private static HashMap<Integer, Integer> contactsToPanelMap;
     private static MachatApp instance;
     private ContactsWindow contactsui;
     private ChatNetwork connection;
@@ -56,11 +57,13 @@ public class MachatApp {
         } catch (UnsupportedLookAndFeelException e) {
         } catch (IllegalAccessException e) {
         }
-        contactsToWindowMap = new HashMap<Integer, Integer>();
+        contactsToPanelMap = new HashMap<Integer, Integer>();
         contactsui = new ContactsWindow();
         contactsui.setVisible(true);
 
-        chats = new LinkedList<ChatWindow>();
+        chats = new LinkedList<ChatPanel>();
+        chatWindow = new ChatWindow();
+        chatWindow.setVisible(true);
 
         try {
             connection = new ChatNetwork();
@@ -92,11 +95,10 @@ public class MachatApp {
      * Opens a new chat with a user.
      * @param userId The user to open a chat with.
      */
-    public static void openNewChat(int userId) {
-        ChatWindow newChat = new ChatWindow(userId);
-        newChat.setVisible(true);
+    public void openNewChat(int userId) {
+        ChatPanel newChat = chatWindow.openNewChat(userId);
         chats.add(newChat);
-        contactsToWindowMap.put(userId, nextChatId);
+        contactsToPanelMap.put(userId, nextChatId);
         nextChatId++;
     }
     /**
@@ -121,11 +123,11 @@ public class MachatApp {
      * @param contactId The contact ID to open a chat with
      * @return Either a new ChatWindow for that user, or a reference to an open one.
      */
-    private static ChatWindow getChatWindow(int contactId) {
-        if(contactsToWindowMap.get(contactId) == null) {
+    private ChatPanel getChatWindow(int contactId) {
+        if(contactsToPanelMap.get(contactId) == null) {
             openNewChat(contactId);
         }
-        int chatWindowId = contactsToWindowMap.get(contactId);
+        int chatWindowId = contactsToPanelMap.get(contactId);
         return chats.get(chatWindowId);
     }
     /**

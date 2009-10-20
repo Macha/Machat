@@ -273,7 +273,7 @@ class CommandProcessor implements Runnable {
             // Tell the server to disconnect us.
             MachatServer.disconnect(conId);
         } else if(commandArr[0].equalsIgnoreCase("confirmconnect")) {
-        	
+        		
         } else {
             try {
                 out.write("Unknown: " + commandArr[0] + "\n");

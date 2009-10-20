@@ -44,6 +44,7 @@ public class ContactsWindow extends javax.swing.JFrame {
         listData = new DefaultListModel();
         listData.addElement("Test Contact");
         contactList.setModel(listData);
+        setTitle("Contacts - Machat");
 
     }
     /**
@@ -154,7 +155,7 @@ public class ContactsWindow extends javax.swing.JFrame {
                 } else {
                     // For the time being 1 is a placeholder. Switch to getting
                     // the contact id when that is implemented.
-                    MachatApp.openNewChat(1);
+                    MachatApp.getApplication().openNewChat(1);
                 }
             }
         }
@@ -168,7 +169,7 @@ public class ContactsWindow extends javax.swing.JFrame {
         } catch(NumberFormatException e) {
             // Test code. Final version will use usernames instead of ids.
         }
-        MachatApp.openNewChat(contactId);
+        MachatApp.getApplication().openNewChat(contactId);
     }
 
     /**

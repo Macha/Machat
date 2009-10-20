@@ -21,6 +21,15 @@
 
 package machat.client;
 
+import java.awt.Component;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JMenuBar;
+
 
 
 /**
@@ -34,36 +43,24 @@ public class ChatWindow extends javax.swing.JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -1884248914631495966L;
-	private final static String newline = "\n";
     private MachatApp app;
-    private int contactId;
 
+    private JMenuItem exitMenuItem;
+    private JMenuBar menuBar;
+    private JTabbedPane tabs;
     /** 
      * Creates new form ChatWindow
      */
-    public ChatWindow(int userId) {
+    public ChatWindow() {
         initComponents();
-        contactId = userId;
         this.app = MachatApp.getApplication();
-        this.setTitle("Machat - Chatting with " + userId);
+        this.setTitle("Machat");
     }
-    /**
-     * Adds a message to the UI
-     * @param username The username of the message sender (or You)
-     * @param msg The message to add.
-     */
-    public void addMessage(String username, String msg) {
-        logTextArea.append(username + " said: " + msg + newline);
-    }
-
-    /**
-     * Sends a message to the user that you are currently chatting with.
-     */
-    public void sendMessage() {
-        String currentMessage = messageTextArea.getText();
-        addMessage("You", currentMessage);
-        app.sendMessage(currentMessage, contactId);
-        messageTextArea.setText("");
+    
+    public synchronized ChatPanel openNewChat(int userId) {
+    	ChatPanel newPanel = new ChatPanel(userId);
+    	tabs.addTab(new Integer(userId).toString(), newPanel);
+    	return newPanel;
     }
 
     /** 
@@ -71,44 +68,11 @@ public class ChatWindow extends javax.swing.JFrame {
      */
     private void initComponents() {
 
-        messageScrollPane = new javax.swing.JScrollPane();
-        messageTextArea = new javax.swing.JTextArea();
-        sendButton = new javax.swing.JButton();
-        logScrollPane = new javax.swing.JScrollPane();
-        logTextArea = new javax.swing.JTextArea();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         setName("Form"); 
-
-        messageScrollPane.setName("messageScrollPane"); 
-
-        messageTextArea.setColumns(20);
-        messageTextArea.setRows(5);
-        messageTextArea.setName("messageTextArea"); 
-        messageTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                messageTextAreaKeyPressed(evt);
-            }
-        });
-        messageScrollPane.setViewportView(messageTextArea);
-
-        sendButton.setText("Send"); 
-        sendButton.setName("sendButton"); 
-        sendButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sendButtonActionPerformed(evt);
-            }
-        });
-
-        logScrollPane.setName("logScrollPane"); 
-
-        logTextArea.setColumns(20);
-        logTextArea.setEditable(false);
-        logTextArea.setRows(5);
-        logTextArea.setName("logTextArea"); 
-        logScrollPane.setViewportView(logTextArea);
 
         menuBar.setName("menuBar"); 
 
@@ -137,68 +101,24 @@ public class ChatWindow extends javax.swing.JFrame {
             }
         });
 
-
-
         menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(logScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(messageScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(logScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                    .addComponent(messageScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
-                .addGap(19, 19, 19))
-        );
+        
+        tabs = new JTabbedPane();
+        this.add(tabs);
 
         pack();
     }
 
-    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        sendMessage();
-    }
 
     private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {
+    	// TODO
 
-    }
-
-    private void messageTextAreaKeyPressed(java.awt.event.KeyEvent evt) {
-        if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            sendMessage();
-            evt.consume();
-        }
     }
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         MachatApp.getApplication().close();
     }
-
-    // Variables declaration
-    private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JScrollPane logScrollPane;
-    private javax.swing.JTextArea logTextArea;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JScrollPane messageScrollPane;
-    private javax.swing.JTextArea messageTextArea;
-    private javax.swing.JButton sendButton;
-    // End of variables declaration
 
 }
